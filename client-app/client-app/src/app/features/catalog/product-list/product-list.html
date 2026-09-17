@@ -1,0 +1,31 @@
+<div class="catalog-container">
+  <h2>Catalogue des Produits</h2>
+
+  <!-- Message d'erreur -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- État de chargement -->
+  @if (isLoading()) {
+    <p class="loading">Chargement des produits...</p>
+  } @else {
+    <!-- Liste des produits -->
+    <div class="product-grid">
+      @for (product of products(); track product.id) {
+        <div class="product-card">
+          <h3>{{ product.name }}</h3>
+          <p class="description">{{ product.description }}</p>
+          <div class="card-footer">
+            <span class="price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+            <span class="stock">En stock : {{ product.stockQuantity }}</span>
+          </div>
+        </div>
+      } @empty {
+        <p>Aucun produit disponible pour le moment.</p>
+      }
+    </div>
+  }
+</div>
