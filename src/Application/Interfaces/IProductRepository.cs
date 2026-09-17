@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Interfaces
+using Domain.Entities;
+
+namespace Application.Interfaces;
+
+public interface IProductRepository
 {
-    internal class IProductRepository
-    {
-    }
+    Task<IEnumerable<Product>> GetAllAsync();
+    Task<Product?> GetByIdAsync(Guid id);
+    Task AddAsync(Product product);
 }
