@@ -1,43 +1,24 @@
 ﻿using Domain.Entities;
-using Application.DTOs;
 
 namespace Domain.Specifications;
 
-/// <summary>
-/// DESIGN PATTERN: Concrete Specification Pattern (Spécification Métier)
-/// Encapsule la logique métier précise du catalogue produits Amazon (recherche textuelle, filtre par marque/catégorie, tri, pagination).
-/// Principe SOLID: Open/Closed Principle (OCP) & Liskov Substitution Principle (LSP).
-/// </summary>
 public class ProductsWithTypesAndBrandsSpecification : BaseSpecification<Product>
 {
-    public ProductsWithTypesAndBrandsSpecification(ProductSpecParams specParams)
+    public ProductsWithTypesAndBrandsSpecification(ProductSpecParams p)
         : base(x =>
-            (string.IsNullOrEmpty(specParams.Search) || x.Name.ToLower().Contains(specParams.Search)) &&
-            (string.IsNullOrEmpty(specParams.Brand) || x.Brand == specParams.Brand) &&
-            (string.IsNullOrEmpty(specParams.Category) || x.Category == specParams.Category))
+            (string.IsNullOrEmpty(p.Search) || x.Name.ToLower().Contains(p.Search!)) &&
+            (string.IsNullOrEmpty(p.Brand) || x.Brand == p.Brand) &&
+            (string.IsNullOrEmpty(p.Category) || x.Category == p.Category))
     {
-        // Applique la pagination (ex: Page 2 avec 10 items => Skip 10, Take 10)
-        ApplyPaging(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
+        ApplyPaging((p.PageIndex - 1) * p.PageSize, p.PageSize);
 
-        // Applique le tri selon le paramètre reçu
-        if (!string.IsNullOrEmpty(specParams.Sort))
+        switch (p.Sort)
         {
-            switch (specParams.Sort)
-            {
-                case "priceAsc":
-                    AddOrderBy(p => p.Price);
-                    break;
-                case "priceDesc":
-                    AddOrderByDescending(p => p.Price);
-                    break;
-                default:
-                    AddOrderBy(p => p.Name);
-                    break;
-            }
-        }
-        else
-        {
-            AddOrderBy(p => p.Name);
+            case "priceAsc": AddOrderBy(x => x.Price); break;
+            case "priceDesc": AddOrderByDescending(x => x.Price); break;
+            default: AddOrderBy(x => x.Name); break;
         }
     }
+
+    public ProductsWithTypesAndBrandsSpecification(int id) : base(x => x.Id == id) { }
 }

@@ -1,42 +1,56 @@
-﻿using Application.DTOs;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Specifications;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers;
 
-/// <summary>
-/// DESIGN PATTERN: Controller / Dependency Injection
-/// Principe SOLID: Dependency Inversion Principle (DIP) - dépend uniquement des interfaces (IGenericRepository).
-/// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController : ControllerBase
+public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
 {
-    private readonly IGenericRepository<Product> _productsRepo;
-
-    public ProductsController(IGenericRepository<Product> productsRepo)
+    [HttpGet]
+    public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams p)
     {
-        _productsRepo = productsRepo;
+        var spec = new ProductsWithTypesAndBrandsSpecification(p);
+        var countSpec = new ProductWithFiltersForCountSpecification(p);
+
+        var total = await repo.CountAsync(countSpec);
+        var items = await repo.ListAsync(spec);
+
+        return Ok(new Pagination<Product>(p.PageIndex, p.PageSize, total, items));
     }
 
-    /// <summary>
-    /// Récupère les produits paginés et filtrés façon Amazon.
-    /// Exemple : GET /api/products?pageIndex=1&pageSize=10&sort=priceAsc&search=phone
-    /// </summary>
-    [HttpGet]
-    public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams specParams)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<Product>> GetProduct(int id)
     {
-        // 1. Instanciation des deux spécifications (Données paginées + Compte total)
-        var spec = new ProductsWithTypesAndBrandsSpecification(specParams);
-        var countSpec = new ProductWithFiltersForCountSpecification(specParams);
+        var product = await repo.GetEntityWithSpecAsync(new ProductsWithTypesAndBrandsSpecification(id));
+        return product is null ? NotFound() : Ok(product);
+    }
 
-        // 2. Exécution via le Repository
-        var totalItems = await _productsRepo.CountAsync(countSpec);
-        var products = await _productsRepo.ListAsync(spec);
+    [HttpPost]
+    public async Task<ActionResult<Product>> CreateProduct(Product product)
+    {
+        repo.Add(product);
+        if (!await repo.SaveAllAsync()) return BadRequest("Échec de la création du produit");
+        return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+    }
 
-        // 3. Retour sous forme d'enveloppe paginée
-        return Ok(new Pagination<Product>(specParams.PageIndex, specParams.PageSize, totalItems, products));
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateProduct(int id, Product product)
+    {
+        if (id != product.Id || !repo.Exists(id)) return BadRequest("Produit invalide");
+        repo.Update(product);
+        return await repo.SaveAllAsync() ? NoContent() : BadRequest("Échec de la mise à jour");
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var product = await repo.GetByIdAsync(id);
+        if (product is null) return NotFound();
+        repo.Delete(product);
+        return await repo.SaveAllAsync() ? NoContent() : BadRequest("Échec de la suppression");
     }
 }

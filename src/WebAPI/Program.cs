@@ -1,33 +1,38 @@
 using Domain.Interfaces;
-using Infrastructure.Data; // Assure-toi que le namespace de ton ApplicationDbContext est correct
+using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Ajout de la base de données (DbContext)
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Si tu utilises SQLite / PostgreSQL, adapte UseSqlServer() en UseSqlite() ou UseNpgsql()
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
 
-// 2. Injection du Generic Repository (DIP)
+builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-// 3. Configuration OpenAPI / Controllers
-builder.Services.AddControllers(); // Utile si tu prévois d'utiliser des API Controllers
-builder.Services.AddOpenApi();
+builder.Services.AddCors(o => o.AddPolicy("Angular", p =>
+    p.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
 
-// Configure le pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi();   // JSON sur /openapi/v1.json
 }
 
 app.UseHttpsRedirection();
-
-// Optionnel: Mappe tes contrôleurs si tu en ajoutes
+app.UseCors("Angular");
+app.UseAuthorization();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync();
+    await DbInitializer.SeedAsync(context);
+}
 
 app.Run();

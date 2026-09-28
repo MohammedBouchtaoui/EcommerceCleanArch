@@ -2,19 +2,10 @@
 
 namespace Domain.Specifications;
 
-/// <summary>
-/// DESIGN PATTERN: Specification Pattern (Classe de base)
-/// Implémentation réutilisable de ISpecification.
-/// Principe SOLID: Open/Closed Principle (OCP) - extensible par héritage sans modifier la classe de base.
-/// </summary>
-public class BaseSpecification<T> : ISpecification<T>
+public abstract class BaseSpecification<T> : ISpecification<T>
 {
-    public BaseSpecification() { }
-
-    public BaseSpecification(Expression<Func<T, bool>> criteria)
-    {
-        Criteria = criteria;
-    }
+    protected BaseSpecification() { }
+    protected BaseSpecification(Expression<Func<T, bool>> criteria) => Criteria = criteria;
 
     public Expression<Func<T, bool>>? Criteria { get; }
     public List<Expression<Func<T, object>>> Includes { get; } = new();
@@ -22,23 +13,11 @@ public class BaseSpecification<T> : ISpecification<T>
     public Expression<Func<T, object>>? OrderByDescending { get; private set; }
     public int Take { get; private set; }
     public int Skip { get; private set; }
-    public bool IsPagingEnabled { get; set; }
+    public bool IsPagingEnabled { get; private set; }
 
-    // Méthodes 'protected' réservées aux classes filles pour construire la requête
-    protected void AddInclude(Expression<Func<T, object>> includeExpression)
-    {
-        Includes.Add(includeExpression);
-    }
-
-    protected void AddOrderBy(Expression<Func<T, object>> orderByExpression)
-    {
-        OrderBy = orderByExpression;
-    }
-
-    protected void AddOrderByDescending(Expression<Func<T, object>> orderByDescExpression)
-    {
-        OrderByDescending = orderByDescExpression;
-    }
+    protected void AddInclude(Expression<Func<T, object>> include) => Includes.Add(include);
+    protected void AddOrderBy(Expression<Func<T, object>> orderBy) => OrderBy = orderBy;
+    protected void AddOrderByDescending(Expression<Func<T, object>> orderBy) => OrderByDescending = orderBy;
 
     protected void ApplyPaging(int skip, int take)
     {
