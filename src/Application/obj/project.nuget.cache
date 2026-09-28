@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "MRh7FAi+eb8=",
+  "dgSpecHash": "tCNOqlwqB+o=",
   "success": true,
   "projectFilePath": "C:\\Users\\dell\\Desktop\\CSharp\\Projects Clean  Arch\\EcommerceCleanArch\\src\\Application\\Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\dell\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.12\\microsoft.extensions.dependencyinjection.abstractions.9.0.12.nupkg.sha512"
+  ],
   "logs": []
 }
