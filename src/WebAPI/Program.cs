@@ -1,28 +1,53 @@
+<<<<<<< Updated upstream
 using Application.Interfaces;
+=======
+using Application;
+using Infrastructure;
+>>>>>>> Stashed changes
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+<<<<<<< Updated upstream
 using Microsoft.Extensions.DependencyInjection;
+=======
+using WebAPI.Middleware;
+>>>>>>> Stashed changes
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
+<<<<<<< Updated upstream
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+=======
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddCors(o => o.AddPolicy("Angular", p =>
+    p.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+>>>>>>> Stashed changes
 
 // 2. Inversion de dépendance (IoC) pour les repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 var app = builder.Build();
 
+<<<<<<< Updated upstream
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+=======
+app.UseExceptionHandler();
+app.UseStatusCodePages();   // corps ProblemDetails pour les 404/405 sans contenu
+if (app.Environment.IsDevelopment())
+    app.MapOpenApi();
+>>>>>>> Stashed changes
 
 app.UseHttpsRedirection();
 

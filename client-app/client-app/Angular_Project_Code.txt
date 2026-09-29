@@ -1,3 +1,208 @@
+﻿========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\core\models\product.model.ts
+========================================
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stockQuantity: number;
+  createdAt: string;
+}
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\core\services\product.services.ts
+========================================
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Product } from '../models/product.model';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ProductService {
+  private http = inject(HttpClient);
+  // Remplace le port si ton API .NET en utilise un autre
+  private apiUrl = 'https://localhost:7001/api/products';
+
+  getProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.apiUrl);
+  }
+}
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\features\catalog\product-list\product-list.css
+========================================
+.catalog-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .product-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    h3 {
+      margin-top: 0;
+      color: #111827;
+    }
+
+    .description {
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #f3f4f6;
+
+      .price {
+        font-weight: bold;
+        color: #059669;
+        font-size: 1.1rem;
+      }
+
+      .stock {
+        font-size: 0.85rem;
+        color: #4b5563;
+      }
+    }
+  }
+}
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\features\catalog\product-list\product-list.html
+========================================
+<div class="catalog-container">
+  <h2>Catalogue des Produits</h2>
+
+  <!-- Message d'erreur -->
+  @if (errorMessage()) {
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Ã‰tat de chargement -->
+  @if (isLoading()) {
+    <p class="loading">Chargement des produits...</p>
+  } @else {
+    <!-- Liste des produits -->
+    <div class="product-grid">
+      @for (product of products(); track product.id) {
+        <div class="product-card">
+          <h3>{{ product.name }}</h3>
+          <p class="description">{{ product.description }}</p>
+          <div class="card-footer">
+            <span class="price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+            <span class="stock">En stock : {{ product.stockQuantity }}</span>
+          </div>
+        </div>
+      } @empty {
+        <p>Aucun produit disponible pour le moment.</p>
+      }
+    </div>
+  }
+</div>
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\features\catalog\product-list\product-list.ts
+========================================
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ProductService } from '../../../core/services/product.service';
+import { Product } from '../../../core/models/product.model';
+
+@Component({
+  selector: 'app-product-list',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './product-list.html',
+  styleUrl: './product-list.css',
+})
+export class ProductListComponent implements OnInit {
+  private productService = inject(ProductService);
+
+  products = signal<Product[]>([]);
+  isLoading = signal<boolean>(true);
+  errorMessage = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    this.isLoading.set(true);
+    this.productService.getProducts().subscribe({
+      next: (data: Product[]) => {
+        this.products.set(data);
+        this.isLoading.set(false);
+      },
+      error: (err: unknown) => {
+        console.error('Erreur :', err);
+        this.errorMessage.set(
+          "Impossible de charger les produits. VÃ©rifiez que l'API .NET est dÃ©marrÃ©e.",
+        );
+        this.isLoading.set(false);
+      },
+    });
+  }
+}
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\app.config.ts
+========================================
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideHttpClient(),
+  ],
+};
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\app.css
+========================================
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\app.html
+========================================
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
 <!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
@@ -233,7 +438,7 @@
         </defs>
       </svg>
       <h1>Hello, {{ title() }}</h1>
-      <p>Congratulations! Your app is running. 🎉</p>
+      <p>Congratulations! Your app is running. ðŸŽ‰</p>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">
@@ -342,3 +547,64 @@
 
 
 <router-outlet />
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\app.routes.ts
+========================================
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [];
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\app\app.ts
+========================================
+import { Component } from '@angular/core';
+import { ProductListComponent } from './features/catalog/product-list/product-list';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [ProductListComponent],
+  template: `<app-product-list></app-product-list>`,
+})
+export class AppComponent {
+  title = 'client-app';
+}
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\index.html
+========================================
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ClientApp</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\main.ts
+========================================
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { AppComponent } from './app/app';
+
+bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
+
+
+========================================
+FILE: C:\Users\dell\Desktop\CSharp\Projects Clean  Arch\EcommerceCleanArch\client-app\client-app\src\styles.css
+========================================
+/* You can add global styles to this file, and also import other style files */
+
+

@@ -1,31 +1,84 @@
-<div class="catalog-container">
-  <h2>Catalogue des Produits</h2>
+<section class="catalog">
+  <header class="catalog-header">
+    <h2>Catalogue des produits</h2>
+    <span class="result-count">{{ totalCount() }} produit(s)</span>
+  </header>
 
-  <!-- Message d'erreur -->
+  <div class="toolbar">
+    <input
+      #searchBox
+      type="search"
+      placeholder="Rechercher un produit..."
+      [value]="params().search"
+      (input)="onSearch(searchBox.value)"
+    />
+
+    <select #brandBox (change)="onBrand(brandBox.value)" aria-label="Marque">
+      <option value="" [selected]="params().brand === ''">Toutes les marques</option>
+      @for (b of brands(); track b) {
+        <option [value]="b" [selected]="b === params().brand">{{ b }}</option>
+      }
+    </select>
+
+    <select #categoryBox (change)="onCategory(categoryBox.value)" aria-label="Catégorie">
+      <option value="" [selected]="params().category === ''">Toutes les catégories</option>
+      @for (c of categories(); track c) {
+        <option [value]="c" [selected]="c === params().category">{{ c }}</option>
+      }
+    </select>
+
+    <select #sortBox (change)="onSort(sortBox.value)" aria-label="Tri">
+      @for (s of sortOptions; track s.value) {
+        <option [value]="s.value" [selected]="s.value === params().sort">{{ s.label }}</option>
+      }
+    </select>
+
+    <button type="button" class="btn-secondary" (click)="reset()">Réinitialiser</button>
+  </div>
+
   @if (errorMessage()) {
-    <div class="alert alert-error">
-      {{ errorMessage() }}
+    <div class="alert-error" role="alert">
+      <span>{{ errorMessage() }}</span>
+      <button type="button" (click)="retry()">Réessayer</button>
     </div>
   }
 
-  <!-- État de chargement -->
   @if (isLoading()) {
     <p class="loading">Chargement des produits...</p>
-  } @else {
-    <!-- Liste des produits -->
-    <div class="product-grid">
-      @for (product of products(); track product.id) {
-        <div class="product-card">
+  }
+
+  @if (!isLoading() && !errorMessage() && products().length === 0) {
+    <p class="empty">Aucun produit ne correspond à votre recherche.</p>
+  }
+
+  <div class="product-grid" [class.is-loading]="isLoading()">
+    @for (product of products(); track product.id) {
+      <article class="product-card">
+        <div class="thumb" aria-hidden="true">{{ product.category.charAt(0) }}</div>
+        <div class="card-body">
+          <span class="badge">{{ product.brand }}</span>
           <h3>{{ product.name }}</h3>
           <p class="description">{{ product.description }}</p>
-          <div class="card-footer">
-            <span class="price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
-            <span class="stock">En stock : {{ product.stockQuantity }}</span>
-          </div>
         </div>
-      } @empty {
-        <p>Aucun produit disponible pour le moment.</p>
-      }
-    </div>
+        <div class="card-footer">
+          <span class="price">{{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' }}</span>
+          <span class="stock" [class.out]="product.stockQuantity === 0">
+            {{ product.stockQuantity > 0 ? 'En stock : ' + product.stockQuantity : 'Rupture' }}
+          </span>
+        </div>
+      </article>
+    }
+  </div>
+
+  @if (totalPages() > 1) {
+    <nav class="pagination" aria-label="Pagination">
+      <button type="button" (click)="goToPage(params().pageIndex - 1)" [disabled]="params().pageIndex <= 1">
+        Précédent
+      </button>
+      <span>Page {{ params().pageIndex }} / {{ totalPages() }}</span>
+      <button type="button" (click)="goToPage(params().pageIndex + 1)" [disabled]="params().pageIndex >= totalPages()">
+        Suivant
+      </button>
+    </nav>
   }
-</div>
+</section>
