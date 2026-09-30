@@ -6,7 +6,9 @@ public abstract class BaseSpecification<T> : ISpecification<T>
 {
     protected BaseSpecification() { }
     protected BaseSpecification(Expression<Func<T, bool>> criteria) => Criteria = criteria;
+    public List<string> IncludeStrings { get; } = new();
 
+    protected void AddInclude(string includeString) => IncludeStrings.Add(includeString);
     public Expression<Func<T, bool>>? Criteria { get; }
     public List<Expression<Func<T, object>>> Includes { get; } = new();
     public Expression<Func<T, object>>? OrderBy { get; private set; }

@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Interfaces;
+using Application.Services;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Application
+namespace Application;
+
+public static class DependencyInjection
 {
-    internal class DependencyInjection
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IBasketService, BasketService>();
+        return services;
     }
 }

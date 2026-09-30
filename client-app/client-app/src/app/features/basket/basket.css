@@ -1,0 +1,55 @@
+<section class="basket">
+  <h2>Mon panier</h2>
+
+  @if (basket.error()) {
+    <div class="alert-error" role="alert">{{ basket.error() }}</div>
+  }
+
+  @if (basket.isEmpty()) {
+    <div class="empty">
+      <p>Votre panier est vide.</p>
+      <a routerLink="/catalog" class="btn">Voir le catalogue</a>
+    </div>
+  } @else {
+    <div class="basket-layout">
+      <ul class="items">
+        @for (item of basket.items(); track item.productId) {
+          <li class="item">
+            <div class="thumb" aria-hidden="true">{{ item.name.charAt(0) }}</div>
+
+            <div class="info">
+              <span class="badge">{{ item.brand }}</span>
+              <h3>{{ item.name }}</h3>
+              <span class="unit">{{ item.unitPrice | currency: 'EUR' }} l'unité</span>
+            </div>
+
+            <div class="qty">
+              <button type="button" (click)="changeQuantity(item, -1)"
+                      [disabled]="basket.busy() || item.quantity <= 1" aria-label="Diminuer">−</button>
+              <span>{{ item.quantity }}</span>
+              <button type="button" (click)="changeQuantity(item, 1)"
+                      [disabled]="basket.busy()" aria-label="Augmenter">+</button>
+            </div>
+
+            <div class="line-total">{{ item.lineTotal | currency: 'EUR' }}</div>
+
+            <button type="button" class="remove" (click)="basket.remove(item.productId)"
+                    [disabled]="basket.busy()" aria-label="Retirer">✕</button>
+          </li>
+        }
+      </ul>
+
+      <aside class="summary">
+        <h3>Récapitulatif</h3>
+        <div class="row"><span>Articles</span><span>{{ basket.itemCount() }}</span></div>
+        <div class="row total"><span>Sous-total</span><span>{{ basket.subtotal() | currency: 'EUR' }}</span></div>
+        <button type="button" class="btn" disabled title="Disponible à l'étape Commandes">
+          Passer la commande
+        </button>
+        <button type="button" class="btn-link" (click)="basket.clear()" [disabled]="basket.busy()">
+          Vider le panier
+        </button>
+      </aside>
+    </div>
+  }
+</section>

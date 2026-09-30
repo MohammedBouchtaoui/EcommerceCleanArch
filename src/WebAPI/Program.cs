@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+
 builder.Services.AddCors(o => o.AddPolicy("Angular", p =>
     p.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
 
