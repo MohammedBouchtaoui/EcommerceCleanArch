@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
 import { BasketService } from './core/services/basket.service';
 
 @Component({
@@ -12,6 +13,13 @@ import { BasketService } from './core/services/basket.service';
         <a routerLink="/basket" class="nav-link">
           Panier <span class="count">{{ basket.itemCount() }}</span>
         </a>
+        @if (auth.user(); as u) {
+          <a routerLink="/account" class="nav-link">{{ u.displayName }}</a>
+          <button type="button" class="link-btn" (click)="auth.logout()">Déconnexion</button>
+        } @else {
+          <a routerLink="/login" class="nav-link">Connexion</a>
+          <a routerLink="/register" class="nav-link">Inscription</a>
+        }
       </nav>
     </header>
     <main><router-outlet /></main>
@@ -39,6 +47,14 @@ import { BasketService } from './core/services/basket.service';
       color: #e5e7eb;
       text-decoration: none;
     }
+    .link-btn {
+      background: transparent;
+      border: 0;
+      color: #e5e7eb;
+      cursor: pointer;
+      font: inherit;
+      padding: 0;
+    }
     .count {
       display: inline-block;
       min-width: 1.4rem;
@@ -55,6 +71,7 @@ import { BasketService } from './core/services/basket.service';
 })
 export class AppComponent {
   readonly basket = inject(BasketService);
+  readonly auth = inject(AuthService);
 
   constructor() {
     this.basket.load();
