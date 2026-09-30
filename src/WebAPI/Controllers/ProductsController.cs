@@ -3,7 +3,8 @@ using Domain.Interfaces;
 using Domain.Specifications;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Helpers;
-
+using Application.Common;
+using Microsoft.AspNetCore.Authorization;
 namespace WebAPI.Controllers;
 
 [ApiController]
@@ -11,6 +12,7 @@ namespace WebAPI.Controllers;
 public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
 {
     [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams p)
     {
         var spec = new ProductsWithTypesAndBrandsSpecification(p);
@@ -21,14 +23,14 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
 
         return Ok(new Pagination<Product>(p.PageIndex, p.PageSize, total, items));
     }
-
+    [Authorize(Roles = Roles.Admin)]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Product>> GetProduct(int id)
     {
         var product = await repo.GetEntityWithSpecAsync(new ProductsWithTypesAndBrandsSpecification(id));
         return product is null ? NotFound() : Ok(product);
     }
-
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost]
     public async Task<ActionResult<Product>> CreateProduct(Product product)
     {
@@ -36,7 +38,7 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
         if (!await repo.SaveAllAsync()) return BadRequest("Échec de la création du produit");
         return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
     }
-
+    [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateProduct(int id, Product product)
     {
@@ -44,7 +46,7 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
         repo.Update(product);
         return await repo.SaveAllAsync() ? NoContent() : BadRequest("Échec de la mise à jour");
     }
-
+    [Authorize(Roles = Roles.Admin)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {

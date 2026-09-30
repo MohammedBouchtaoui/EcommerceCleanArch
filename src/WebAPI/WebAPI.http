@@ -4,3 +4,19 @@ GET {{WebAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+### Inscription
+POST http://localhost:5280/api/account/register
+Content-Type: application/json
+
+{ "email": "client@test.com", "password": "Client12345", "displayName": "Client Test" }
+
+### Connexion admin (compte seedé)
+POST http://localhost:5280/api/account/login
+Content-Type: application/json
+
+{ "email": "admin@shop.local", "password": "Admin12345" }
+
+### Profil (collez le token reçu)
+GET http://localhost:5280/api/account/me
+Authorization: Bearer COLLEZ_LE_TOKEN_ICI
