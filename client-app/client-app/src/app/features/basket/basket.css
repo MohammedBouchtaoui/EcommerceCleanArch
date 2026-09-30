@@ -1,55 +1,55 @@
-<section class="basket">
-  <h2>Mon panier</h2>
+.basket { max-width: 1100px; margin: 0 auto; padding: 2rem; }
 
-  @if (basket.error()) {
-    <div class="alert-error" role="alert">{{ basket.error() }}</div>
-  }
+.alert-error {
+  background: #fee2e2; color: #991b1b;
+  padding: 1rem; border-radius: 8px; margin-bottom: 1rem;
+}
 
-  @if (basket.isEmpty()) {
-    <div class="empty">
-      <p>Votre panier est vide.</p>
-      <a routerLink="/catalog" class="btn">Voir le catalogue</a>
-    </div>
-  } @else {
-    <div class="basket-layout">
-      <ul class="items">
-        @for (item of basket.items(); track item.productId) {
-          <li class="item">
-            <div class="thumb" aria-hidden="true">{{ item.name.charAt(0) }}</div>
+.empty { text-align: center; padding: 3rem 0; color: #6b7280; }
 
-            <div class="info">
-              <span class="badge">{{ item.brand }}</span>
-              <h3>{{ item.name }}</h3>
-              <span class="unit">{{ item.unitPrice | currency: 'EUR' }} l'unité</span>
-            </div>
+.btn {
+  display: inline-block; padding: 0.7rem 1.2rem; border: 0; border-radius: 8px;
+  background: #4f46e5; color: #fff; font: inherit; cursor: pointer; text-decoration: none;
+}
+.btn:disabled { background: #c7d2fe; cursor: not-allowed; }
 
-            <div class="qty">
-              <button type="button" (click)="changeQuantity(item, -1)"
-                      [disabled]="basket.busy() || item.quantity <= 1" aria-label="Diminuer">−</button>
-              <span>{{ item.quantity }}</span>
-              <button type="button" (click)="changeQuantity(item, 1)"
-                      [disabled]="basket.busy()" aria-label="Augmenter">+</button>
-            </div>
+.basket-layout { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; align-items: start; }
+@media (max-width: 800px) { .basket-layout { grid-template-columns: 1fr; } }
 
-            <div class="line-total">{{ item.lineTotal | currency: 'EUR' }}</div>
+.items { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
 
-            <button type="button" class="remove" (click)="basket.remove(item.productId)"
-                    [disabled]="basket.busy()" aria-label="Retirer">✕</button>
-          </li>
-        }
-      </ul>
+.item {
+  display: grid; grid-template-columns: 64px 1fr auto 100px 32px;
+  gap: 1rem; align-items: center;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem;
+}
 
-      <aside class="summary">
-        <h3>Récapitulatif</h3>
-        <div class="row"><span>Articles</span><span>{{ basket.itemCount() }}</span></div>
-        <div class="row total"><span>Sous-total</span><span>{{ basket.subtotal() | currency: 'EUR' }}</span></div>
-        <button type="button" class="btn" disabled title="Disponible à l'étape Commandes">
-          Passer la commande
-        </button>
-        <button type="button" class="btn-link" (click)="basket.clear()" [disabled]="basket.busy()">
-          Vider le panier
-        </button>
-      </aside>
-    </div>
-  }
-</section>
+.thumb {
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 8px;
+  background: linear-gradient(135deg, #e0e7ff, #f5d0fe);
+  font-size: 1.6rem; font-weight: 700; color: #6366f1;
+}
+
+.info h3 { margin: 0.25rem 0; font-size: 1rem; }
+.unit { color: #6b7280; font-size: 0.85rem; }
+.badge { background: #eef2ff; color: #4338ca; font-size: 0.7rem; padding: 0.1rem 0.5rem; border-radius: 999px; }
+
+.qty { display: flex; align-items: center; gap: 0.6rem; }
+.qty button {
+  width: 30px; height: 30px; border: 1px solid #d1d5db; border-radius: 6px;
+  background: #fff; cursor: pointer; font-size: 1rem;
+}
+.qty button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.line-total { font-weight: 700; color: #059669; text-align: right; }
+.remove { border: 0; background: transparent; color: #9ca3af; cursor: pointer; font-size: 1.1rem; }
+.remove:hover { color: #dc2626; }
+
+.summary {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem;
+  display: grid; gap: 0.75rem;
+}
+.summary h3 { margin: 0; }
+.row { display: flex; justify-content: space-between; }
+.row.total { font-weight: 700; font-size: 1.1rem; border-top: 1px solid #f3f4f6; padding-top: 0.75rem; }
+.btn-link { border: 0; background: transparent; color: #6b7280; text-decoration: underline; cursor: pointer; }

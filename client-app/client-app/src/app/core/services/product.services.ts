@@ -1,17 +1,30 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Product } from '../models/product.model';
+import { environment } from '../../../environments/environment';
+import { Pagination, Product, ProductParams } from '../models/product.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class ProductService {
-  private http = inject(HttpClient);
-  // Remplace le port si ton API .NET en utilise un autre
-  private apiUrl = 'https://localhost:7001/api/products';
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/products`;
 
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl);
+  getProducts(p: ProductParams): Observable<Pagination<Product>> {
+    let params = new HttpParams().set('pageIndex', p.pageIndex).set('pageSize', p.pageSize);
+
+    if (p.search) params = params.set('search', p.search);
+    if (p.brand) params = params.set('brand', p.brand);
+    if (p.category) params = params.set('category', p.category);
+    if (p.sort) params = params.set('sort', p.sort);
+
+    return this.http.get<Pagination<Product>>(this.baseUrl, { params });
+  }
+
+  getBrands(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/brands`);
+  }
+
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/categories`);
   }
 }
