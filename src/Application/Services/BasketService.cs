@@ -34,7 +34,6 @@ public class BasketService(
         if (isNew) baskets.Add(basket);
         await baskets.SaveAllAsync();
 
-        // Relecture pour charger les produits des nouvelles lignes
         return await GetAsync(key);
     }
 
@@ -57,7 +56,7 @@ public class BasketService(
     public async Task ClearAsync(Guid key)
     {
         var basket = await Find(key);
-        if (basket is null) return;   // idempotent
+        if (basket is null) return;
         baskets.Delete(basket);
         await baskets.SaveAllAsync();
     }

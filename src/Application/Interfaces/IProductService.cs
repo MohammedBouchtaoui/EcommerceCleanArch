@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common;
+using Application.DTOs;
+using Domain.Specifications;
 
-namespace Application.Interfaces
+namespace Application.Interfaces;
+
+public interface IProductService
 {
-    internal class IProductRepository
-    {
-    }
+    Task<Pagination<ProductDto>> GetProductsAsync(ProductSpecParams p);
+    Task<ProductDto> GetByIdAsync(int id);
+    Task<ProductDto> CreateAsync(CreateProductDto dto);
+    Task UpdateAsync(int id, CreateProductDto dto);
+    Task DeleteAsync(int id);
+    Task<IReadOnlyList<string>> GetBrandsAsync();
+    Task<IReadOnlyList<string>> GetCategoriesAsync();
 }

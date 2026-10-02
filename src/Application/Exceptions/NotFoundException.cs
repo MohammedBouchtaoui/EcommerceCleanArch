@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.Exceptions;
 
-namespace Application.Exceptions
-{
-    internal class NotFoundException
-    {
-    }
-}
+public class NotFoundException(string entity, object key)
+    : Exception($"{entity} avec l'identifiant '{key}' est introuvable.");

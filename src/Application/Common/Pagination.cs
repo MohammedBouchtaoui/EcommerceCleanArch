@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Helpers;
+﻿namespace Application.Common;
 
 public class Pagination<T>(int pageIndex, int pageSize, int count, IReadOnlyList<T> data)
 {
