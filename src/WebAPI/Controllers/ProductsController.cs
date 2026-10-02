@@ -1,58 +1,91 @@
-﻿using Domain.Entities;
-using Domain.Interfaces;
+﻿using Application.Common;
+using Application.DTOs;
+using Application.Interfaces;
 using Domain.Specifications;
-using Microsoft.AspNetCore.Mvc;
-using WebAPI.Helpers;
-using Application.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 namespace WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController(IGenericRepository<Product> repo) : ControllerBase
+public class ProductsController(IProductService service) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams p)
-    {
-        var spec = new ProductsWithTypesAndBrandsSpecification(p);
-        var countSpec = new ProductWithFiltersForCountSpecification(p);
+    public async Task<ActionResult<Pagination<ProductDto>>> GetProducts([FromQuery] ProductSpecParams p)
+        => Ok(await service.GetProductsAsync(p));
 
-        var total = await repo.CountAsync(countSpec);
-        var items = await repo.ListAsync(spec);
-
-        return Ok(new Pagination<Product>(p.PageIndex, p.PageSize, total, items));
-    }
-    [Authorize(Roles = Roles.Admin)]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Product>> GetProduct(int id)
-    {
-        var product = await repo.GetEntityWithSpecAsync(new ProductsWithTypesAndBrandsSpecification(id));
-        return product is null ? NotFound() : Ok(product);
-    }
+    public async Task<ActionResult<ProductDto>> GetProduct(int id)
+        => Ok(await service.GetByIdAsync(id));
+
+    [HttpGet("brands")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetBrands()
+        => Ok(await service.GetBrandsAsync());
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+   [HttpGet("categories")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetCategories()
+        => Ok(await service.GetCategoriesAsync());
+
     [Authorize(Roles = Roles.Admin)]
     [HttpPost]
-    public async Task<ActionResult<Product>> CreateProduct(Product product)
+    public async Task<ActionResult<ProductDto>> Create(CreateProductDto dto)
     {
-        repo.Add(product);
-        if (!await repo.SaveAllAsync()) return BadRequest("Échec de la création du produit");
-        return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
-    }
+        var created = await service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetProduct), new { id = created.Id }, created);
+ 
+
+
+
+
+
+
+
+
+
+   }
+
     [Authorize(Roles = Roles.Admin)]
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateProduct(int id, Product product)
+    public async Task<IActionResult> Update(int id, CreateProductDto dto)
     {
-        if (id != product.Id || !repo.Exists(id)) return BadRequest("Produit invalide");
-        repo.Update(product);
-        return await repo.SaveAllAsync() ? NoContent() : BadRequest("Échec de la mise à jour");
+        await service.UpdateAsync(id, dto);
+        return NoContent();
     }
+
+
+
+
+
+
+
+
+
     [Authorize(Roles = Roles.Admin)]
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteProduct(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var product = await repo.GetByIdAsync(id);
-        if (product is null) return NotFound();
-        repo.Delete(product);
-        return await repo.SaveAllAsync() ? NoContent() : BadRequest("Échec de la suppression");
+        await service.DeleteAsync(id);
+ 
+
+
+
+
+
+
+       return NoContent();
     }
 }

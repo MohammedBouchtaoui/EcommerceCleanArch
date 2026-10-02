@@ -25,4 +25,19 @@ public static class SpecificationEvaluator<T> where T : BaseEntity
         query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
         return query;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
