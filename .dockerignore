@@ -1,0 +1,8 @@
+﻿**/bin
+**/obj
+**/node_modules
+client-app
+tests
+.git
+.vs
+.env
