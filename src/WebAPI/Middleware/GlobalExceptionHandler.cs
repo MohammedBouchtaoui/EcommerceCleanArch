@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,21 @@ public class GlobalExceptionHandler(
     {
         var (status, title) = exception switch
         {
-            NotFoundException => (StatusCodes.Status404NotFound, "Ressource introuvable"),
-            BadRequestException => (StatusCodes.Status400BadRequest, "Requête invalide"),
+            NotFoundException     => (StatusCodes.Status404NotFound, "Ressource introuvable"),
+            BadRequestException   => (StatusCodes.Status400BadRequest, "Requête invalide"),
             UnauthorizedException => (StatusCodes.Status401Unauthorized, "Non autorisé"),
-            _ => (StatusCodes.Status500InternalServerError, "Erreur interne du serveur")
+            ConflictException     => (StatusCodes.Status409Conflict, "Conflit"),
+            DomainRuleException   => (StatusCodes.Status409Conflict, "Règle métier non respectée"),
+ 
+
+
+
+
+
+
+
+
+           _                     => (StatusCodes.Status500InternalServerError, "Erreur interne du serveur")
         };
 
         if (status >= 500)
@@ -26,14 +38,31 @@ public class GlobalExceptionHandler(
 
         var problem = new ProblemDetails
         {
-            Status = status,
+ 
+
+
+
+
+
+
+
+
+
+           Status = status,
             Title = title,
             Detail = status < 500 || env.IsDevelopment() ? exception.Message : null,
             Instance = context.Request.Path
         };
         problem.Extensions["traceId"] = context.TraceIdentifier;
 
-        context.Response.StatusCode = status;
+ 
+
+
+
+
+
+
+       context.Response.StatusCode = status;
         await context.Response.WriteAsJsonAsync(problem, ct);
         return true;
     }

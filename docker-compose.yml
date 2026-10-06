@@ -1,0 +1,51 @@
+﻿services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:?Définissez SA_PASSWORD dans le fichier .env}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Server=db;Database=EcommerceDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True
+      Jwt__Key: ${JWT_KEY:?Définissez JWT_KEY (32 caractères minimum) dans le fichier .env}
+      Seed__AdminPassword: ${ADMIN_PASSWORD:-}
+    ports:
+      - "5280:8080"
+
+volumes:
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ sqldata:

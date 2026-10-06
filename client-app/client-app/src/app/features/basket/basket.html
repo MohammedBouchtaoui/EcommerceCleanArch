@@ -43,9 +43,7 @@
         <h3>Récapitulatif</h3>
         <div class="row"><span>Articles</span><span>{{ basket.itemCount() }}</span></div>
         <div class="row total"><span>Sous-total</span><span>{{ basket.subtotal() | currency: 'EUR' }}</span></div>
-        <button type="button" class="btn" disabled title="Disponible à l'étape Commandes">
-          Passer la commande
-        </button>
+        <a routerLink="/checkout" class="btn">Passer la commande</a>
         <button type="button" class="btn-link" (click)="basket.clear()" [disabled]="basket.busy()">
           Vider le panier
         </button>

@@ -299,6 +299,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.12, )"
+            },
+            "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.12, )"
             }
           },
           "imports": [

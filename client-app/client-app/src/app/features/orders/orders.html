@@ -1,0 +1,47 @@
+﻿<section class="orders">
+  <h2>Mes commandes</h2>
+
+  @if (error()) {
+    <div class="alert-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="muted">Chargement...</p>
+  } @else if (orders().length === 0 && !error()) {
+    <div class="empty">
+      <p>Vous n'avez pas encore passé de commande.</p>
+      <a routerLink="/catalog" class="btn">Découvrir les produits</a>
+    </div>
+  } @else {
+    <ul class="order-list">
+      @for (o of orders(); track o.id) {
+        <li>
+          <a [routerLink]="['/orders', o.id]" class="order-row">
+            <div>
+              <strong>Commande n° {{ o.id }}</strong>
+              <span class="muted">{{ o.createdAtUtc | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <span class="muted">{{ o.items.length }} article(s)</span>
+            <span [class]="'badge status-' + o.status.toLowerCase()">{{ labels[o.status] }}</span>
+            <strong>{{ o.total | currency: 'EUR' }}</strong>
+          </a>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       </li>
+      }
+    </ul>
+  }
+</section>

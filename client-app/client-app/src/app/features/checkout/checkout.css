@@ -1,0 +1,28 @@
+﻿.checkout { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+.layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start; }
+@media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; display: grid; gap: 1rem; }
+.card h3 { margin: 0; }
+
+label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
+input { padding: 0.6rem 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+.row { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
+.field-error { color: #dc2626; font-weight: 400; }
+.alert-error { background: #fee2e2; color: #991b1b; padding: 0.85rem 1rem; border-radius: 8px; }
+
+.summary ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.summary li, .line { display: flex; justify-content: space-between; gap: 1rem; }
+.total { font-weight: 700; border-top: 1px solid #f3f4f6; padding-top: 0.75rem; }
+.muted { colo
+
+
+
+
+r: #6b7280; font-size: 0.85rem; margin: 0; }
+
+.btn { display: inline-block; text-align: center; padding: 0.7rem 1.2rem; border: 0; border-radius: 8px; background: #4f46e5; color: #fff; font: inherit; cursor: pointer; text-decoration: none; }
+.btn:disabled { background: #c7d2fe; cursor: not-allowed; }
+.back { color: #6b7280; text-align: center; }
+.empty { text-align: center; padding: 3rem 0; color: #6b7280; }

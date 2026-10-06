@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, finalize } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -20,7 +20,21 @@ export class BasketService {
   readonly isEmpty = computed(() => this.items().length === 0);
 
   readonly busy = signal(false);
-  readonly error = signal<string | null>(null);
+ 
+
+
+
+
+
+
+
+
+
+ readonly error = signal<string | null>(null);
+
+  get basketKey(): string {
+    return this.key;
+  }
 
   load(): void {
     this.run(this.http.get<Basket>(this.url));
@@ -31,7 +45,22 @@ export class BasketService {
   }
 
   setQuantity(productId: number, quantity: number): void {
-    this.run(this.http.put<Basket>(`${this.url}/items/${productId}`, { quantity }));
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   this.run(this.http.put<Basket>(`${this.url}/items/${productId}`, { quantity }));
   }
 
   remove(productId: number): void {
@@ -40,31 +69,75 @@ export class BasketService {
 
   clear(): void {
     this.busy.set(true);
-    this.error.set(null);
+ 
+
+
+
+
+
+
+
+
+   this.error.set(null);
     this.http
       .delete<void>(this.url)
       .pipe(finalize(() => this.busy.set(false)))
       .subscribe({
-        next: () => this.basket.set({ key: this.key, items: [], totalItems: 0, subtotal: 0 }),
+        next: () => this.clearLocal(),
         error: (e: Error) => this.error.set(e.message),
-      });
+  
+
+
+
+
+
+
+    });
   }
+
+  // Le serveur supprime le panier à la commande : on vide seulement l'état local
+  clearLocal(): void {
+    this.basket.set({ key: this.key, items: [], totalItems: 0, subtotal: 0 });
+ 
+
+
+
+
+
+ }
 
   private run(request$: Observable<Basket>): void {
     this.busy.set(true);
     this.error.set(null);
-    request$.pipe(finalize(() => this.busy.set(false))).subscribe({
+    request$.pipe(final
+
+
+
+
+ize(() => this.busy.set(false))).subscribe({
       next: (b) => this.basket.set(b),
       error: (e: Error) => this.error.set(e.message),
     });
-  }
+ 
+
+
+
+ }
 
   private getOrCreateKey(): string {
     let key = localStorage.getItem(STORAGE_KEY);
-    if (!key) {
+ 
+
+
+
+   if (!key) {
       key = crypto.randomUUID();
       localStorage.setItem(STORAGE_KEY, key);
     }
-    return key;
+ 
+
+
+
+   return key;
   }
 }
