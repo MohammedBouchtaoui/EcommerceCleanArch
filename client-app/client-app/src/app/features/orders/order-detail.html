@@ -1,0 +1,104 @@
+﻿<section class="orders">
+  <a routerLink="/orders" class="back">← Mes commandes</a>
+
+  @if (error()) {
+    <div class="alert-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="muted">Chargement...</p>
+  }
+
+  @if (order(); as o) {
+    <header class="detail-header">
+      <div>
+        <h2>Commande n° {{ o.id }}</h2>
+        <span class="muted">Passée le {{ o.createdAtUtc | date: 'dd/MM/yyyy à HH:mm' }}</span>
+      </div>
+      <span [class]="'badge status-' + o.status.toLowerCase()">{{ labels[o.status] }}</span>
+    </header>
+
+    <div class="detail-layout">
+      <ul class="lines card">
+        @for (i of o.items; track i.productId) {
+          <li>
+            <div class="thumb" aria-hidden="true">{{ i.productName.charAt(0) }}</div>
+            <div class="grow">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <strong>{{ i.productName }}</strong>
+              <span class="muted">{{ i.quantity }} × {{ i.unitPrice | currency: 'EUR' }}</span>
+            </div>
+            <strong>{{ i.lineTotal | currency: 'EUR' }}</strong>
+          </li>
+        }
+      </ul>
+
+      <aside class="card">
+        <h3>Récapitulatif</h3>
+        <div class="line"><span>Sous-total</span><span>{{ o.subtotal | currency: 'EUR' }}</span></div>
+        <div class="line">
+          <spa
+
+
+
+
+
+
+
+
+
+
+
+n>Livraison</span>
+          <span>{{ o.shippingCost === 0 ? 'Offerte' : (o.shippingCost | currency: 'EUR') }}</span>
+        </div>
+        <div class="line total"><span>Total</span><span>{{ o.total | currency: 'EUR' }}</span></div>
+
+        <h3>Adresse de livraison</h3>
+        <address>
+          {{ o.shippingAddress.fullName }}<br />
+ 
+
+
+
+
+
+
+
+         {{ o.shippingAddress.line1 }}<br />
+          {{ o.shippingAddress.postalCode }} {{ o.shippingAddress.city }}<br />
+          {{ o.shippingAddress.country }}
+        </address>
+
+        @if (o.status === 'Pending') {
+          <button 
+
+
+
+
+
+type="button" class="btn" (click)="pay()" [disabled]="busy()">Payer (simulation)</button>
+          <button type="button" class="btn-link" (click)="cancel()" [disabled]="busy()">Annuler la commande</button>
+        }
+      </aside>
+    </div>
+ 
+
+
+
+
+ }
+</section>

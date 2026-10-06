@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -13,6 +13,34 @@ export const routes: Routes = [
     loadComponent: () => import('./features/basket/basket').then((m) => m.BasketComponent),
   },
   {
+    path: 'checkout',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/checkout/checkout').then((m) => m.CheckoutComponent),
+  },
+  {
+    path: 'orders',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/orders/orders').then((m) => m.OrdersComponent),
+  },
+ 
+
+
+
+
+
+
+
+
+
+
+
+ {
+    path: 'orders/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/orders/order-detail').then((m) => m.OrderDetailComponent),
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login').then((m) => m.LoginComponent),
   },
@@ -20,11 +48,33 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () =>
       import('./features/auth/register/register').then((m) => m.RegisterComponent),
-  },
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ },
   {
     path: 'account',
     canActivate: [authGuard],
     loadComponent: () => import('./features/account/account').then((m) => m.AccountComponent),
   },
-  { path: '**', redirectTo: 'catalog' },
+  { path: '**', redirectTo: 'catalog' 
+
+
+
+
+
+},
+
 ];
+

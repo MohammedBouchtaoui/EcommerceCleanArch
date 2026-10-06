@@ -14,6 +14,7 @@ import { BasketService } from './core/services/basket.service';
           Panier <span class="count">{{ basket.itemCount() }}</span>
         </a>
         @if (auth.user(); as u) {
+          <a routerLink="/orders" class="nav-link">Mes commandes</a>
           <a routerLink="/account" class="nav-link">{{ u.displayName }}</a>
           <button type="button" class="link-btn" (click)="auth.logout()">Déconnexion</button>
         } @else {

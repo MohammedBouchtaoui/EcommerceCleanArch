@@ -1,0 +1,127 @@
+﻿<section class="checkout">
+  <h2>Validation de la commande</h2>
+
+  @if (basket.isEmpty()) {
+    <div class="empty">
+      <p>Votre panier est vide.</p>
+      <a routerLink="/catalog" class="btn">Voir le catalogue</a>
+    </div>
+  } @else {
+    <div class="layout">
+      <form id="checkout-form" class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <h3>Adresse de livraison</h3>
+
+        @if (error()) {
+          <div class="alert-error" role="alert">{{ error() }}</div>
+        }
+
+        <label>
+          Nom complet
+          <input type="text" formControlName="fullName" autocomplete="name" />
+          @if (invalid('fullName')) { <small class="field-error">Champ obligatoire.</small> }
+        </label>
+
+        <label>
+          Adresse
+          <input type="text" formControlName="line1" autocomplete="street-address" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          @if (invalid('line1')) { <small class="field-error">Champ obligatoire.</small> }
+        </label>
+
+        <div class="row">
+          <label>
+            Code postal
+            <input type="text" formControlName="postalCode" autocomplete="postal-code" />
+            @if (invalid('postalCode')) { <small class="field-error">Champ obligatoire.</small> }
+          </label>
+          <label>
+            Ville
+ 
+
+
+
+
+
+
+
+
+
+
+           <input type="text" formControlName="city" autocomplete="address-level2" />
+            @if (invalid('city')) { <small class="field-error">Champ obligatoire.</small> }
+          </label>
+        </div>
+
+        <label>
+          Pays
+          <input type="text" formControlName="country" autocomplete="country-name" />
+ 
+
+
+
+
+
+
+
+         @if (invalid('country')) { <small class="field-error">Champ obligatoire.</small> }
+        </label>
+      </form>
+
+      <aside class="card summary">
+        <h3>Votre panier</h3>
+        <ul>
+ 
+
+
+
+
+
+
+         @for (item of basket.items(); track item.productId) {
+            <li>
+              <span>{{ item.quantity }} × {{ item.name }}</span>
+              <span>{{ item.lineTotal | currency: 'EUR' }}</span>
+            </li>
+ 
+
+
+
+
+         }
+        </ul>
+
+        <div class="line total"><span>Sous-total</span><span>{{ basket.subtotal() | currency: 'EUR' }}</span></div>
+        <p class="muted">Livraison offerte dès 100 €, sinon 5,90 €. Le montant définitif est calculé à la validation.
+
+
+
+</p>
+
+        <button type="submit" form="checkout-form" class="btn" [disabled]="loading()">
+          {{ loading() ? 'Validation...' : 'Confirmer la commande' }}
+ 
+
+
+
+       </button>
+        <a routerLink="/basket" class="back">← Modifier le panier</a>
+      </aside>
+  
+
+
+  </div>
+  }
+</section>
